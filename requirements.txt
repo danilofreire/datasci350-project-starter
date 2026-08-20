@@ -1,0 +1,23 @@
+# Python packages for the DATASCI 350 final project.
+#
+# Every package is pinned to an exact version with "==".
+# Pinning is what makes the project reproducible: pip installs
+# these exact versions today, in December, and on my machine.
+# If you add a package, pin it here in the same way.
+
+# Talking to web APIs
+requests==2.32.5
+
+# Data processing (use either, or both)
+polars==1.43.2
+duckdb==1.5.5
+
+# Plotting
+matplotlib==3.10.8
+
+# Quarto needs these to run Python code inside report.qmd
+ipykernel==7.2.0
+jupyter-client==8.8.0
+nbclient==0.10.4
+nbformat==5.10.4
+pyyaml==6.0.3

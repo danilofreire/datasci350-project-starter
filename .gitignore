@@ -1,0 +1,26 @@
+# Python caches
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Quarto working files and rendered output
+.quarto/
+/.quarto_ipynb
+*.quarto_ipynb
+report.html
+report.pdf
+report_files/
+/output/
+
+# Operating system clutter
+.DS_Store
+Thumbs.db
+
+# NOTE: data/raw/ is deliberately NOT ignored.
+# The saved API snapshot must be committed so that the report
+# renders from the same data on every machine, in every month.
+
+/.quarto/
+**/*.quarto_ipynb

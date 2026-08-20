@@ -1,0 +1,144 @@
+---
+title: "Your project title goes here"
+subtitle: "DATASCI 350: Data Science Computing"
+author:
+  - "First group member"
+  - "Second group member"
+  - "Third group member"
+date: today
+lang: en-GB
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    embed-resources: true
+    code-fold: false
+execute:
+  echo: true
+  warning: false
+---
+
+<!--
+How to use this file.
+
+Replace every section below with your own work. Keep the section
+headings, because they match the grading rubric.
+
+"echo: true" in the header above shows your code in the rendered
+report. The rubric asks for visible code, so leave that setting alone.
+
+Aim for 1,500 to 2,500 words, not counting code.
+-->
+
+# Research question
+
+State your research question in the first paragraph. Say what you want to
+find out, for which countries, and over which years.
+
+Then give the reader two or three sentences on why the question is worth
+asking, and one sentence on what you found. A reader who stops here
+should still know what the report says.
+
+# Data
+
+Describe your data. Answer these questions.
+
+- Which API did you use, and which indicator or endpoint?
+- Which countries, years, or units does your sample cover?
+- How many rows do you have, and how many values are missing?
+
+Say how the data reached this report. The script in `scripts/pull_data.py`
+called the API once and saved the response to `data/raw/`. This report
+reads that saved copy. It never calls the API itself.
+
+# Methods
+
+Explain what you did with the data, in plain language, before the code
+shows how you did it.
+
+The rubric does not reward complicated statistics. A careful set of
+descriptive statistics, correctly interpreted, scores better than an
+advanced method used incorrectly. Choose the method that fits your
+question.
+
+# Results
+
+::: {.callout-warning}
+## Demo chunk: delete this section and replace it with your own work
+
+Everything between here and the end of this section is example code. It
+exists so that you can build the container and see something render on
+day one. Remove it once your own analysis works.
+:::
+
+The chunk below reads the saved snapshot in `data/raw/`, not the live
+API, and draws one line chart.
+
+```{python}
+# | label: fig-demo
+# | fig-cap: "Life expectancy at birth, 2000 to 2023. Source: World Bank."
+
+import matplotlib.pyplot as plt
+import polars as pl
+
+# Read the saved snapshot. This file is committed to the repository,
+# so this line works on any machine, with or without an internet
+# connection.
+data = pl.read_csv("data/raw/life_expectancy.csv")
+
+print(f"Loaded {data.height} rows covering {data['country'].n_unique()} countries.")
+
+# Draw one line per country.
+fig, ax = plt.subplots(figsize=(7, 4))
+
+for country in sorted(data["country"].unique()):
+    subset = data.filter(pl.col("country") == country).sort("year")
+    ax.plot(subset["year"], subset["value"], marker="o", markersize=3, label=country)
+
+ax.set_xlabel("Year")
+ax.set_ylabel("Life expectancy at birth (years)")
+ax.set_title("Life expectancy, 2000 to 2023")
+ax.legend()
+ax.grid(alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+A short paragraph should follow every figure, saying what the reader
+should take from it. @fig-demo shows life expectancy rising in all four
+countries, with the sharpest fall during 2020 and 2021.
+
+Your report needs at least two visualisations. Add the second one here.
+
+# Limitations
+
+Be honest about what your data and your method cannot tell you.
+
+Useful things to write about:
+
+- Country-years with no measurement, and what dropping them does to your
+  comparison.
+- Indicators that measure something narrower than their name suggests.
+- Correlations you cannot read as causal, and why.
+
+# Conclusion
+
+Answer the question you asked at the top. Say what you found, and say
+what you would need in order to go further.
+
+# Use of AI
+
+State how your group used AI tools. Name each tool. Say which parts of
+the work it touched, for example drafting code, debugging an error, or
+editing prose.
+
+Every group member must be able to explain any part of this submission.
+
+# Contribution statement
+
+Say who did what. One or two sentences per person is enough.
+
+- First group member: wrote the pull script, cleaned the data.
+- Second group member: built the figures, wrote the results section.
+- Third group member: set up the container, edited the final report.

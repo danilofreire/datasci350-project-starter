@@ -34,8 +34,10 @@ SHELL ["/bin/bash", "-c"]
 # apt-get update refreshes the list of available packages.
 # apt-get install -y installs without asking for confirmation.
 # --no-install-recommends skips optional extras and keeps the image small.
-# We pin each package version, for the same reason we pin Python packages.
-# Available versions are listed at https://packages.ubuntu.com/
+# We do not pin apt versions here. Ubuntu replaces a package's exact
+# version whenever it ships a security fix, and a pinned version that
+# no longer exists stops the build. The base image tag and the Python
+# packages in requirements.txt carry the pins instead.
 # The final "apt-get clean" and "rm -rf" delete the download cache, which
 # would otherwise sit inside the image for no reason.
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -90,6 +92,7 @@ WORKDIR /project
 
 # Copy everything else from your repository into the image, including
 # report.qmd and the saved data snapshot in data/raw/.
+# The .dockerignore file next to this one lists what stays out.
 COPY . /project
 
 # ---------------------------------------------------------------------

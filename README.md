@@ -17,6 +17,7 @@ structure.
 | `report.qmd` | The Quarto report, with headings that match the grading rubric |
 | `requirements.txt` | The Python packages, pinned to exact versions |
 | `Dockerfile` | The recipe that builds the container |
+| `.dockerignore` | The list of files that stay out of the image |
 
 ## The design rule
 

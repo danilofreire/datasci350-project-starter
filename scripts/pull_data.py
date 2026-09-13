@@ -20,7 +20,7 @@ the rest will follow.
 import json
 from pathlib import Path
 
-import polars as pl
+import pandas as pd
 import requests
 
 # ---------------------------------------------------------------------
@@ -90,7 +90,7 @@ def fetch_indicator(indicator: str, countries: str, years: str) -> list:
     return payload
 
 
-def tidy(payload: list) -> pl.DataFrame:
+def tidy(payload: list) -> pd.DataFrame:
     """Turn the nested API response into a flat table."""
     records = payload[1]
 
@@ -111,11 +111,14 @@ def tidy(payload: list) -> pl.DataFrame:
         for record in records
     ]
 
-    frame = pl.DataFrame(rows)
+    frame = pd.DataFrame(rows)
 
     # Rows with no value are years the World Bank has not measured.
-    # We drop them here so that the report does not have to.
-    frame = frame.drop_nulls("value").sort(["country", "year"])
+    # dropna() removes them here, so that the report does not have to.
+    # sort_values puts the rows in a predictable order, country first and
+    # then year, and reset_index renumbers them from 0 afterwards.
+    frame = frame.dropna(subset=["value"])
+    frame = frame.sort_values(["country", "year"]).reset_index(drop=True)
 
     return frame
 
@@ -135,9 +138,11 @@ def main() -> None:
 
     frame = tidy(payload)
 
+    # index=False keeps pandas from adding its own row-number column,
+    # which is not part of the data and would confuse anyone reading the CSV.
     csv_path = RAW_DIR / f"{OUTPUT_NAME}.csv"
-    frame.write_csv(csv_path)
-    print(f"Saved {frame.height} tidy rows to {csv_path}")
+    frame.to_csv(csv_path, index=False)
+    print(f"Saved {len(frame)} tidy rows to {csv_path}")
 
     print("\nFirst few rows:")
     print(frame.head())

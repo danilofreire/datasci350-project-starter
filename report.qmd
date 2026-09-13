@@ -78,21 +78,26 @@ API, and draws one line chart.
 # | label: fig-demo
 # | fig-cap: "Life expectancy at birth, 2000 to 2023. Source: World Bank."
 
+import duckdb
 import matplotlib.pyplot as plt
-import polars as pl
 
-# Read the saved snapshot. This file is committed to the repository,
-# so this line works on any machine, with or without an internet
-# connection.
-data = pl.read_csv("data/raw/life_expectancy.csv")
+# Read the saved snapshot. DuckDB runs SQL straight over the CSV file,
+# and .df() hands the result back as a pandas DataFrame. The file is
+# committed to the repository, so this line works on any machine, with
+# or without an internet connection.
+data = duckdb.sql(
+    "SELECT country, year, value "
+    "FROM 'data/raw/life_expectancy.csv' "
+    "ORDER BY country, year"
+).df()
 
-print(f"Loaded {data.height} rows covering {data['country'].n_unique()} countries.")
+print(f"Loaded {len(data)} rows covering {data['country'].nunique()} countries.")
 
-# Draw one line per country.
+# Draw one line per country. groupby splits the table into one smaller
+# table per country, and the loop draws each of them in turn.
 fig, ax = plt.subplots(figsize=(7, 4))
 
-for country in sorted(data["country"].unique()):
-    subset = data.filter(pl.col("country") == country).sort("year")
+for country, subset in data.groupby("country"):
     ax.plot(subset["year"], subset["value"], marker="o", markersize=3, label=country)
 
 ax.set_xlabel("Year")

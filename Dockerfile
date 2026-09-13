@@ -53,17 +53,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # 4. Quarto
 # ---------------------------------------------------------------------
 # Quarto is not in the Ubuntu package list, so we download the .deb file
-# from GitHub and install it.
+# from GitHub and install it. The version 1.10.18 is written out in full,
+# so the image you build is the image everyone else builds.
 # Laptops use different processor architectures: Apple Silicon Macs are
 # arm64, most Windows and Linux machines are amd64. The command
 # "dpkg --print-architecture" reports which one this build is running on,
 # so the same Dockerfile works for everyone in the class.
-ARG QUARTO_VERSION=1.9.37
 RUN ARCH=$(dpkg --print-architecture) && \
-    wget -q "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-${ARCH}.deb" && \
+    wget -q "https://github.com/quarto-dev/quarto-cli/releases/download/v1.10.18/quarto-1.10.18-linux-${ARCH}.deb" && \
     apt-get update && \
-    apt-get install -y --no-install-recommends "./quarto-${QUARTO_VERSION}-linux-${ARCH}.deb" && \
-    rm "quarto-${QUARTO_VERSION}-linux-${ARCH}.deb" && \
+    apt-get install -y --no-install-recommends ./quarto-1.10.18-linux-${ARCH}.deb && \
+    rm quarto-1.10.18-linux-${ARCH}.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ---------------------------------------------------------------------

@@ -18,6 +18,7 @@ structure.
 | `requirements.txt` | The Python packages, pinned to exact versions |
 | `Dockerfile` | The recipe that builds the container |
 | `.dockerignore` | The list of files that stay out of the image |
+| `.gitattributes` | Keeps Linux line endings, so scripts work inside the container |
 
 ## The design rule
 
@@ -41,6 +42,15 @@ So you pull once, commit the snapshot, and leave it alone.
 Fork or clone this repository first. Work in your group's own copy.
 
 ### Step 1: pull the data
+
+The pull script runs on your own computer, so it needs the packages
+first. Create a virtual environment and install them, as in Lecture 23.
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
 Open `scripts/pull_data.py`. Change the indicator, the countries, and the
 years in the CONFIGURATION block near the top.
@@ -92,6 +102,9 @@ Here is what the flags mean.
   the container to an `output` folder on your computer. Without it, the
   report renders inside the container and disappears with it.
 
+You never need to push the image to Docker Hub. I build it myself from
+your repository.
+
 ## Test the container early
 
 Warning: a Dockerfile that fails on the night of the deadline cannot be
@@ -107,7 +120,25 @@ wrote the code, because that computer already has your packages installed.
 5. Confirm that `output/report.html` exists and contains your figures.
 
 If step 5 fails, your project fails the reproducibility criterion, which
-is 30% of the grade.
+is 30% of the project grade.
+
+## Working in a mixed group
+
+Some of you use macOS and some use Windows with WSL. The container runs
+Linux, so a few habits keep everyone's build working.
+
+- Match the letter case of file names exactly. macOS treats `Data.csv`
+  and `data.csv` as the same file, but Linux does not. A path that works
+  on a Mac can fail inside the container.
+- Keep Linux line endings. The `.gitattributes` file in this repository
+  tells Git to do this for you, so do not delete it.
+- On Windows, clone the repository inside your WSL home folder (`~/`),
+  not under `/mnt/c/`. Turn on WSL integration in Docker Desktop
+  (Settings, then Resources, then WSL integration), and run every command
+  in the WSL terminal.
+- Each member builds the image from the repository. Do not share built
+  images: an image built on an Apple Silicon Mac does not run on most
+  Windows laptops, and the other way round.
 
 ## Adding a package
 

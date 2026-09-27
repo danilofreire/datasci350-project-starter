@@ -1,0 +1,3 @@
+# Store text files with Linux line endings (LF), so scripts still work
+# inside the container when someone edits them on Windows.
+* text=auto eol=lf

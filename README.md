@@ -43,8 +43,16 @@ Fork or clone this repository first. Work in your group's own copy.
 
 ### Step 1: pull the data
 
-The pull script runs on your own computer, so it needs the packages
-first. Create a virtual environment and install them, as in Lecture 23.
+The pull script runs on your own computer, so it needs Python and the
+packages first. You need Python 3.11 or newer, because the pinned pandas
+version does not install on older ones. Check your version.
+
+```bash
+python3 --version
+```
+
+If it is older, install a newer one from python.org. Then create a virtual
+environment and install the packages, as in Lecture 23.
 
 ```bash
 python3 -m venv .venv
@@ -52,8 +60,9 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Open `scripts/pull_data.py`. Change the indicator, the countries, and the
-years in the CONFIGURATION block near the top.
+Open `scripts/pull_data.py`. Change the indicator, the countries, the years,
+and the output name in the CONFIGURATION block near the top. If you change
+the output name, change the CSV file name in `report.qmd` as well.
 
 Run the script from the top folder of the repository.
 

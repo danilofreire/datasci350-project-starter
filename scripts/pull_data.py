@@ -24,7 +24,7 @@ import pandas as pd
 import requests
 
 # ---------------------------------------------------------------------
-# CONFIGURATION: change these three settings for your own project
+# CONFIGURATION: change these four settings for your own project
 # ---------------------------------------------------------------------
 
 # The World Bank indicator code. This one is life expectancy at birth.
@@ -38,7 +38,8 @@ COUNTRIES = "BRA;IND;NGA;USA"
 # The years to cover, written as "first:last".
 YEARS = "2000:2023"
 
-# A short, readable name for the output files.
+# A short, readable name for the output files. If you change it, change
+# the file name in report.qmd as well.
 OUTPUT_NAME = "life_expectancy"
 
 # ---------------------------------------------------------------------
@@ -120,7 +121,27 @@ def tidy(payload: list) -> pd.DataFrame:
     frame = frame.dropna(subset=["value"])
     frame = frame.sort_values(["country", "year"]).reset_index(drop=True)
 
+    if frame.empty:
+        raise RuntimeError("The API has no values for these years. Try other years.")
+
     return frame
+
+
+def check_years(frame: pd.DataFrame, years: str) -> None:
+    """Stop the script if the table holds years you did not ask for."""
+    # If every year you ask for is outside the data, such as "1900:1901",
+    # the API gives no error. It sends the whole series instead.
+    # split(":") also works for a single year, such as "2020". In that case
+    # the list has one item, so parts[0] and parts[-1] are the same year.
+    parts = years.split(":")
+    first = int(parts[0])
+    last = int(parts[-1])
+
+    if frame["year"].min() < first or frame["year"].max() > last:
+        raise RuntimeError(
+            f"You asked for {years}, but the API sent "
+            f"{frame['year'].min()} to {frame['year'].max()}. Check YEARS."
+        )
 
 
 def main() -> None:
@@ -130,13 +151,16 @@ def main() -> None:
 
     payload = fetch_indicator(INDICATOR, COUNTRIES, YEARS)
 
-    # Save the untouched response first. If you later discover a mistake
-    # in the tidying step, you can fix it without calling the API again.
+    # Build and check the table before saving anything. If something is
+    # wrong, the script stops here and your saved files stay as they were.
+    frame = tidy(payload)
+    check_years(frame, YEARS)
+
+    # Save the untouched response as well as the table. If you later discover
+    # a mistake in the tidying step, you can fix it without calling the API.
     json_path = RAW_DIR / f"{OUTPUT_NAME}_raw.json"
     json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print(f"Saved the raw response to {json_path}")
-
-    frame = tidy(payload)
 
     # index=False keeps pandas from adding its own row-number column,
     # which is not part of the data and would confuse anyone reading the CSV.

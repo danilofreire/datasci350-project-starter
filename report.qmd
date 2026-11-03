@@ -84,7 +84,8 @@ import matplotlib.pyplot as plt
 # Read the saved snapshot. DuckDB runs SQL straight over the CSV file,
 # and .df() hands the result back as a pandas DataFrame. The file is
 # committed to the repository, so this line works on any machine, with
-# or without an internet connection.
+# or without an internet connection. If you changed OUTPUT_NAME in
+# scripts/pull_data.py, change the file name here as well.
 data = duckdb.sql(
     "SELECT country, year, value "
     "FROM 'data/raw/life_expectancy.csv' "
@@ -111,8 +112,9 @@ plt.show()
 ```
 
 A short paragraph should follow every figure, saying what the reader
-should take from it. @fig-demo shows life expectancy rising in all four
-countries, with the sharpest fall during 2020 and 2021.
+should take from it. @fig-demo shows life expectancy higher in 2023 than
+in 2000 in all four countries. It fell in 2020 and 2021 in Brazil, India
+and the United States, but not in Nigeria.
 
 Your report needs at least two visualisations. Add the second one here.
 

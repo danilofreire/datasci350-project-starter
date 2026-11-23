@@ -18,7 +18,7 @@
 FROM ubuntu:24.04
 
 # ---------------------------------------------------------------------
-# 2. Build-time settings
+# 2. Environment and shell
 # ---------------------------------------------------------------------
 # DEBIAN_FRONTEND=noninteractive stops apt-get from asking questions
 # during the build. Nobody is at the keyboard to answer them.
